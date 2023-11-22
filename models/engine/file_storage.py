@@ -9,8 +9,9 @@ from models.user import User
 from models.amenity import Amenity
 
 classes = {
-        'User': User, 'Place': Place, 'State': State, 
+        'User': User, 'Place': Place, 'State': State,
         'City': City, 'Amenity': Amenity, 'Review': Review}
+
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
@@ -19,10 +20,11 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls != None:
+        if cls is not None:
             class_name = cls.__name__
-            single_cls = {k: v for (k, v) in FileStorage.__objects.items()
-                        if class_name in k}
+            single_cls = {
+                    k: v for (k, v) in FileStorage.__objects.items()
+                    if class_name in k}
             return single_cls
         return FileStorage.__objects
 
@@ -59,13 +61,13 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
         """Deletes obj from storage"""
-        if obj == None:
+        if obj is None:
             return
         key = obj.__class__.__name__ + "." + obj.id
         self.all().pop(key)

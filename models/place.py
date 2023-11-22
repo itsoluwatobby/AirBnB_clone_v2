@@ -20,7 +20,7 @@ place_amenity = Table('place_amenity', Base.metadata,
 class Place(BaseModel, Base):
     """
     A place to stay
-    
+
     Attributes:
         __tablename__(str): Table name
         name(str): name of place, cant be null
@@ -33,7 +33,7 @@ class Place(BaseModel, Base):
         price_by_night(int): price of place at night, cant be null
         latitude(float): latitude of place
         longitude(float): longitude of place
-        amenity_id(list): list of amenities id
+        amenity_ids(list): list of amenities id
     """
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
@@ -55,9 +55,11 @@ class Place(BaseModel, Base):
         @property
         def reviews(self):
             '''method for retrieving reviews from file storage'''
-            reviews = models.storage.all(Review).values()
-            _list = [rev for rev in reviews if self.id == rev.place_id]
-            return _list
+            review_list = []
+            for review in list(models.storage.all(Review).values()):
+                if review.place_id == self.id:
+                    review_list.append(review)
+            return review_list
 
         @property
         def amenities(self):
@@ -65,9 +67,11 @@ class Place(BaseModel, Base):
             returns a list of Amenity instances based on amenity_ids
             linked to a Place
             '''
-            amens = models.storage.all(Amenity).values()
-            _list = [ameni for ameni in amens if amen.id in self.amenity_ids]
-            return _list
+            amenity_list = []
+            for amenity in list(models.storage.all(Amenity).values()):
+                if amenity.id in self.amenity_ids:
+                    amenity_list.append(amenity)
+            return amenity_list
 
         @amenities.setter
         def amenities(self, obj):
@@ -75,5 +79,5 @@ class Place(BaseModel, Base):
             handles append method for adding an Amenity.id to the attribute
             amenity_ids.
             '''
-            if obj.__class__.__name__ == "Amenity":
+            if type(obj) == "Amenity":
                 self.amenity_ids.append(obj.id)
