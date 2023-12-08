@@ -17,11 +17,10 @@ def do_pack():
     filename = time.strftime("%Y%m%d%H%M%S")
 
     try:
-        path = "versions/web_static_{}.tgz".format(filename)
         local("mkdir -p versions")
-        local("tar -czvf {} web_static/".format(path))
-
-        return path
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(filename))
+        return "versions/web_static_{}.tgz".format(filename)
     except Exception as e:
         return None
 
@@ -36,11 +35,7 @@ def do_deploy(archive_path):
     """
     if not os.path.isfile(archive_path):
         return False
-
-    # update the /tmp dir
     put(archive_path, '/tmp/')
-
-    # Create dir where file will be extracted to
     filename = archive_path.split('/')[-1]
     dir_path = '/data/web_static/releases/{}'.format(
             filename.split('.')[0])
@@ -49,20 +44,13 @@ def do_deploy(archive_path):
     # decompress to server folder
     server_archive = '/tmp/' + filename
     run('tar -xzf {} -C {}'.format(server_archive, dir_path))
-
-    # remove archive from web server
     run('rm -rf {}'.format(server_archive))
-
-    # remove symbolic link
     run('rm -rf /data/web_static/current')
 
     # transfer files from web_static to web_static
     run('mv {}/web_static/* {}'.format(dir_path, dir_path))
     run('rm -rf {}/web_static'.format(dir_path))
-
-    # Create a new symbolic link
     run('ln -s {} /data/web_static/current'.format(dir_path))
-
     return True
 
 
@@ -73,7 +61,6 @@ def deploy():
     archive_path = do_pack()
     if not archive_path:
         return False
-
     return do_deploy(archive_path)
 
 
@@ -84,17 +71,13 @@ def do_clean(number=0):
         number(int): The number of archives to keep
     '''
     number = int(number)
-
-    # sorted list of the files
     files = os.listdir("versions")
     files.sort()
-
     if number == 0 or number == 1:
         files.pop()
     else:
         for x in range(number):
             files.pop()
-
     # Delete the files locally and remote
     with lcd('versions'):
         for f in files:

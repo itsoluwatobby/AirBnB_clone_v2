@@ -1,6 +1,5 @@
 # Puppet script to configure nginx for webstatic deployment
 
-
 $server_config = "server {
     listen 80 default_server;
     listen [::]:80 default_server;

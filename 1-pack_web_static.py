@@ -16,10 +16,10 @@ def do_pack():
     filename = time.strftime("%Y%m%d%H%M%S")
 
     try:
-        path = "versions/web_static_{}.tgz".format(filename)
         local("mkdir -p versions")
-        local("tar -czvf {} web_static/".format(path))
-        
-        return path
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(filename))
+
+        return "versions/web_static_{}.tgz".format(filename)
     except Exception as e:
         return None

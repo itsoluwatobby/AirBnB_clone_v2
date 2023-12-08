@@ -26,8 +26,7 @@ sudo echo "
   <body>
     Hello ALX SE!
   </body>
-</html>
-" > /data/web_static/releases/test/index.html
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
 # A symbolic link should created or recreated on every run
 sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
