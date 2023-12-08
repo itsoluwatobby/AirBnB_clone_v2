@@ -28,32 +28,43 @@ def do_pack():
 
 env.user = 'ubuntu'
 env.hosts = ['54.146.94.114', '54.172.58.174']
+env.key_filename = '~/.ssh/id_rsa'
 
 
 def do_deploy(archive_path):
     """
     A function that distributes an archive to the web servers
     """
-    if not os.path.isfile(archive_path):
+    try:
+        if not os.path.exists(archive_path):
+            return False
+
+        # update the /tmp dir
+        put(archive_path, '/tmp/')
+
+        timestamp = archive_path[-18:-4]
+        run('sudo mkdir -p /data/web_static/releases/\
+            web_static_{}/'.format(timestamp))
+
+        # decompress archive and delete .tgz
+        run('sudo tar -xzf /tmp/web_static_{}.tgz -C /data/web_static\
+            /releases/web_static_{}/'.format(timestamp, timestamp))
+
+        run('sudo rm /tmp/web_static_{}.tgz'.format(timestamp))
+
+        run('sudo mv /data/web_static/releases/web_static_{}/web_static/* \
+            /data/web_static/releases/web_static_{}/'
+            .format(timestamp, timestamp))
+        # remove extraneous web_static dir
+        run('sudo rm -rf /data/web_static/releases/web_static_{}/\
+             web_static'.format(timestamp))
+
+        # delete pre-existing sym link
+        run('sudo rm -rf /data/web_static/current')
+
+        # re-establish symbolic link
+        run('sudo ln -s /data/web_static/releases/web_static_{}/ /data\
+            /web_static/current'.format(timestamp))
+    except Exception as e:
         return False
-
-    # update the /tmp dir
-    put(archive_path, '/tmp/')
-
-    # Create dir where file will be extracted to
-    filename = archive_path.split('/')[-1]
-    dir_path = '/data/web_static/releases/{}'.format(
-            filename.split('.')[0])
-    run('mkdir -p {}'.format(dir_path))
-    server_archive = '/tmp/' + filename
-    run('tar -xzf {} -C {}'.format(server_archive, dir_path))
-    run('rm -rf {}'.format(server_archive))
-
-    # remove symbolic link
-    run('rm -rf /data/web_static/current')
-    run('mv {}/web_static/* {}'.format(dir_path, dir_path))
-    run('rm -rf {}/web_static'.format(dir_path))
-
-    # Create a new symbolic link
-    run('ln -s {} /data/web_static/current'.format(dir_path))
     return True
