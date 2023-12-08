@@ -5,29 +5,17 @@
 #	create folder /data/web_static/releases, /data/web_static/shared/
 #	and also /data/web_static/releases/test
 
-if [[ ! -x /usr/sbin/nginx ]];
-then
-    sudo apt-get -y update
-    sudo apt-get install -y nginx
-fi
-
+sudo apt-get update
+sudo apt-get install -y nginx
 sudo ufw allow 'Nginx HTTP'
 
 # create the following the folders if they don't exist
-if [[ ! -d "/data/web_static/releases/releases/" ]];
-then
-    sudo mkdir -p /data/web_static/releases/releases/
-fi
-
-if [[ ! -d "/data/web_static/releases/test/" ]];
-then
-    sudo mkdir -p /data/web_static/releases/test/
-fi
-
-if [[ ! -d "/data/web_static/shared/" ]];
-then
-    sudo mkdir -p /data/web_static/shared/
-fi
+sudo mkdir -p /data
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+sudo touch /data/web_static/releases/test/index.html
 
 # create an html file and save it in the file below
 sudo echo "
