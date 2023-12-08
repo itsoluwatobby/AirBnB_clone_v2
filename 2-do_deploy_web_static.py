@@ -6,23 +6,23 @@ function do_deploy:.
 """
 from fabric.api import local, put, env, run
 import os
-import time
+from time import strftime
+from datetime import date
 
 
 def do_pack():
     """
     A function that generates a .tgx archive from web_static folder
     """
-    if not os.path.exist('versions'):
-        os.makedirs('versions')
-
     filename = time.strftime("%Y%m%d%H%M%S")
-    filepath = "versions/web_static_{}.tgz".format(filename)
 
     try:
-        local("tar -czvf {} web_static".format(filepath))
-        return filepath
-    except Exception:
+        path = "versions/web_static_{}.tgz".format(filename)
+        local("mkdir -p versions")
+        local("tar -czvf {} web_static/".format(path))
+
+        return path
+    except Exception as e:
         return None
 
 

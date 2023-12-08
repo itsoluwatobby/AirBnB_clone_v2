@@ -1,7 +1,7 @@
 # Puppet script to configure nginx for webstatic deployment
 
 
-$server_block = "server {
+$server_config = "server {
     listen 80 default_server;
     listen [::]:80 default_server;
     add_header X-Served-By $HOSTNAME;
@@ -12,7 +12,7 @@ $server_block = "server {
         index index.html index.htm;
     }
     location /redirect_me {
-        return 301 http://fkadeal.com/;
+        return 301 https://github.com/itsoluwatobby/;
     }
     error_page 404 /404.html;
     location /404 {
@@ -21,7 +21,7 @@ $server_block = "server {
     }
 }"
 
-$dummy_html = "<html>
+$my_html = "<html>
   <head>
   </head>
   <body>
@@ -56,7 +56,7 @@ file { '/data/web_static/shared':
 
 file { '/data/web_static/releases/test/index.html':
   ensure  => 'present',
-  content => $dummy_html
+  content => $my_html
 } ->
 
 file { '/data/web_static/current':
@@ -71,7 +71,7 @@ exec { 'chown -R ubuntu:ubuntu /data/':
 
 file { '/etc/nginx/sites-available/default':
   ensure  => 'present',
-  content => $server_block
+  content => $server_config
 } ->
 
 service { 'nginx':

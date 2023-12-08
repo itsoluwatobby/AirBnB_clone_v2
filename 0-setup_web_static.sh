@@ -11,25 +11,27 @@ then
     sudo apt-get install -y nginx
 fi
 
+sudo ufw allow 'Nginx HTTP'
+
 # create the following the folders if they don't exist
 if [[ ! -d "/data/web_static/releases/releases/" ]];
 then
-    mkdir -p /data/web_static/releases/releases/
+    sudo mkdir -p /data/web_static/releases/releases/
 fi
 
 if [[ ! -d "/data/web_static/releases/test/" ]];
 then
-    mkdir -p /data/web_static/releases/test/
+    sudo mkdir -p /data/web_static/releases/test/
 fi
 
 if [[ ! -d "/data/web_static/shared/" ]];
 then
-    mkdir -p /data/web_static/shared/
+    sudo mkdir -p /data/web_static/shared/
 fi
 
 # create an html file and save it in the file below
-echo "
-<DOCTYPE html>
+sudo echo "
+<!DOCTYPE html>
 <html>
   <head>
   </head>
@@ -37,26 +39,16 @@ echo "
     Hello ALX SE!
   </body>
 </html>
-" >> /data/web_static/releases/test/index.html
+" > /data/web_static/releases/test/index.html
 
 # A symbolic link should created or recreated on every run
-ln -nsf /data/web_static/releases/test/ /data/web_static/current
+sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
 
 # Give ownership of the /data/ folder to the ubuntu user AND group
 sudo chown -R ubuntu:ubuntu /data/
 
 # update ngnix config file
-echo "
-server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-
-	location /hbnb_static {
-            alias /data/web_static/current/;
-        }
-
-	add_header X-Served-By $HOSTNAME;
-}" > /etc/nginx/sites-available/default
+sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
 
 # restart nginx to effect changes
 sudo service nginx reload
