@@ -3,7 +3,7 @@
 a Fabric script (based on the file 2-do_deploy_web_static.py)
 that distributes an archive to your web servers, using the
 function deploy:.
-execute: fab -f 3-deploy_web_static.py deploy -i ~/.ssh/school -u ubuntu
+fab -f 3-deploy_web_static.py deploy -i ~/.ssh/school -u ubuntu
 """
 from fabric.api import *
 from os.path import exists, isdir
@@ -22,8 +22,9 @@ def do_pack():
         filename = "versions/web_static_{}.tgz".format(date)
         local("tar -cvzf {} web_static".format(filename))
         return filename
-    except:
+    except Exception as e:
         return None
+
 
 def do_deploy(archive_path):
     """
@@ -44,8 +45,9 @@ def do_deploy(archive_path):
         run('rm -rf /data/web_static/current')
         run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
-    except:
+    except Exception as e:
         return False
+
 
 def deploy():
     '''

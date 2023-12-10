@@ -92,5 +92,5 @@ file { '/etc/nginx/sites-available/default':
 } ->
 
 exec { 'nginx restart':
-  ensure => '/etc/init.d/',
+  path => '/etc/init.d/',
 }
