@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from fabric.api import lcd, run, local
+from fabric.api import *
 
 env.hosts = ['54.146.94.114', '54.172.58.174']
 
