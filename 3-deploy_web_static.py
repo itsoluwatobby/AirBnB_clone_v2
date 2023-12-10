@@ -3,10 +3,11 @@
 a Fabric script (based on the file 2-do_deploy_web_static.py)
 that distributes an archive to your web servers, using the
 function deploy:.
+execute: fab -f 3-deploy_web_static.py deploy -i ~/.ssh/school -u ubuntu
 """
-from fabric.api import local, put, env, run
+from fabric.api import *
 from os.path import exists, isdir
-from datetime import date
+from datetime import datetime
 env.hosts = ['54.146.94.114', '54.172.58.174']
 
 
@@ -25,7 +26,9 @@ def do_pack():
         return None
 
 def do_deploy(archive_path):
-    """distributes an archive to the web servers"""
+    """
+     A function that distributes an archive to the web servers
+    """
     if exists(archive_path) is False:
         return False
     try:
