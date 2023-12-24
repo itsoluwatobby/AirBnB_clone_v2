@@ -1,0 +1,121 @@
+#!/usr/bin/python3
+"""
+a script that starts a Flask web application:
+Your web application must be listening on 0.0.0.0, port 5000
+Routes:
+    /: display “Hello HBNB!”
+
+    /hbnb: display “HBNB”
+
+    /c/<text>: display “C ”, followed by the value of the text
+            variable (replace underscore _ symbols with a space )
+
+    /python/<text>: display “Python ”, followed by the value of the
+            text variable (replace underscore _ symbols with a space )
+            * The default value of text is “is cool”
+
+    /number/<n>: display “n is a number” only if n is an integer
+
+    /number_template/<n>: display a HTML page only if n is an integer:
+                * H1 tag: “Number: n” inside the tag BODY
+
+    /number_odd_or_even/<n>: display a HTML page only if n is an integer:
+                * H1 tag: “Number: n is even|odd” inside the tag BODY
+"""
+from flask import Flask, abort, render_template
+
+app = Flask(__name__)
+
+
+@app.route('/', strict_slashes=False)
+def hello_hbnb():
+    """A function that returns Hello HBNB"""
+    return "Hello HBNB!"
+
+
+@app.route('/hbnb', strict_slashes=False)
+def hbnb():
+    """A function that returns HBNB"""
+    return "HBNB"
+
+
+@app.route('/c/<text>', strict_slashes=False)
+def c_with_text(text):
+    """
+    A function that returns the text content in the url
+    Arguments:
+        text<str> - a string retrieved from the last entry
+                    in the url after '/c/'
+    """
+    text_params = text.replace('_', ' ')
+    return "C {}".format(text_params)
+
+
+@app.route('/python/', strict_slashes=False)
+@app.route('/python/<text>', strict_slashes=False)
+def _python(text='is cool'):
+    """
+    A function that returns the text content in the url
+    Arguments:
+        text<str> - a string retrieved from the last entry
+                    in the url after '/python/'
+                    DEFAULT VALUE: text = 'is cool'
+    """
+    text_params = text.replace('_', ' ')
+    return "Python {}".format(text_params)
+
+
+@app.route('/number/<n>', strict_slashes=False)
+def _number(n):
+    """
+    A function that returns the number content in the url
+    Warning: Only integers allowed
+    Arguments:
+        n<int> - a string retrieved from the last entry
+                    in the url after '/number/'
+    """
+    try:
+        value = int(n)
+        return "{} is a number".format(value)
+    except Exception as e:
+        return abort(404)
+
+
+@app.route('/number_template/<n>', strict_slashes=False)
+def number_template(n):
+    """
+    A function that returns the number content in the url
+    Warning: Only integers allowed
+    Arguments:
+        n<int> - a string retrieved from the last entry
+                    in the url after '/number_template/'
+    """
+    try:
+        value = int(n)
+        return render_template('5-number.html', n=value)
+    except Exception as e:
+        return abort(404)
+
+
+@app.route('/number_odd_or_even/<n>', strict_slashes=False)
+def number_odd_or_even(n):
+    """
+    A function that returns the number content in the url
+    Warning: Only integers allowed
+    Arguments:
+        n<int> - a string retrieved from the last entry
+                    in the url after '/number_odd_or_even/'
+    """
+    try:
+        value = int(n)
+        result = 'even' if value % 2 == 0 else 'odd'
+
+        return render_template('6-number_odd_or_even.html',
+                               n=value, result=result)
+    except Exception as e:
+        return abort(404)
+
+
+if __name__ == "__main__":
+    # Run the Flask appi
+    app.run(host='0.0.0.0', port='5000')
