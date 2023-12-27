@@ -16,15 +16,27 @@ Routes:
     LI tag: description of one State: <state.id>: <B><state.name></B>
 """
 
-from flask import Flask
+from flask import Flask, render_template
+from models import storage
+from models.state import State
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "jkssk12ldj982dff99sddf9s34"
 
 
 @app.route('/states_list', strict_slashes=False)
 def states_list():
+    """Renders an HTML psage with a list of State"""
+    states = sorted(list(storage.all("State").values()),
+                    key=lambda s: s.name)
+    return render_template('7-states_list.html', states=states)
+
+
+@app.teardown_appcontext
+def tearDown(exception):
+    """Closes the current sqlalchemy sesssion"""
+    storage.close()
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000)
