@@ -16,10 +16,18 @@ class State(BaseModel, Base):
         name(str): The name of the State
         cities: Relationship between city and state
     """
-    __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
+    if models.storage_n == "db":
+        __tablename__ = 'states'
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", backref="state")
+    else:
+        name = ""
 
-    if os.getenv('HBNB_TYPE_STORAGE') == "db":
+    def __init__(self, *args, **kwargs):
+        """initializes state"""
+        super().__init__(*args, **kwargs)
+
+    if models.storage_n == "db":
         cities = relationship("City", backref="state", cascade="all, delete")
     else:
         @property
